@@ -1,12 +1,13 @@
-import graphene
-from graphene import relay
-from graphene_django.types import DjangoObjectType
-from PIL import Image as PillowImage
 import base64
 from io import BytesIO
-import json
-from django.core.files.base import ContentFile
 
+import graphene
+from django.core.files.base import ContentFile
+from graphene import relay
+from graphene_django.types import DjangoObjectType
+
+from .decorators.mutations_decorators import prepare_image
+from .errors.mutation_errors import CropParametersError
 from .models import Image
 
 
@@ -44,13 +45,9 @@ class ImageResizeMutation(relay.ClientIDMutation):
     image = graphene.Field(ImageType)
 
     @classmethod
+    @prepare_image
     def mutate_and_get_payload(cls, root, info, **kwargs):
-        initial_base64 = kwargs.get('base64')
-        bytes_img = initial_base64.encode('utf-8')
-        original_data = base64.b64decode(bytes_img)
-        original_buffer = BytesIO(original_data)
-        pillow_img = PillowImage.open(original_buffer)
-        resized_img = pillow_img.resize((kwargs.get('width'), kwargs.get('height')))
+        resized_img = kwargs['pillow_img'].resize((kwargs.get('width'), kwargs.get('height')))
 
         new_buffer = BytesIO()
 
@@ -65,5 +62,49 @@ class ImageResizeMutation(relay.ClientIDMutation):
         return ImageResizeMutation(obj)
 
 
+class ImageCropMutation(relay.ClientIDMutation):
+    class Input:
+        base64 = graphene.String(required=True)
+        left = graphene.Int(required=True)
+        top = graphene.Int(required=True)
+        right = graphene.Int(required=True)
+        bottom = graphene.Int(required=True)
+
+    image = graphene.Field(ImageType)
+
+    @classmethod
+    @prepare_image
+    def mutate_and_get_payload(cls, root, info, **kwargs):
+        left = kwargs.get('left')
+        top = kwargs.get('top')
+        right = kwargs.get('right')
+        bottom = kwargs.get('bottom')
+
+        crop_box = (left, top, right, bottom)
+
+        if left > right or top > bottom:
+            raise CropParametersError(
+                """
+                left can not be greater than right, 
+                and top can not be greater than bottom
+                """
+            )
+
+        new_buffer = BytesIO()
+        crop_img = kwargs.get('pillow_img').crop(crop_box)
+
+        crop_img.convert('RGB').save(new_buffer, format="JPEG")
+        crop_img_str = base64.b64encode(new_buffer.getvalue()).decode('utf-8')
+        crop_img_data = base64.b64decode(crop_img_str)
+
+        obj = Image.objects.create(
+            base64=crop_img_str,
+            path=ContentFile(crop_img_data, name="crop_img.jpeg")
+        )
+
+        return ImageCropMutation(obj)
+
+
 class Mutation:
     resize_image = ImageResizeMutation.Field()
+    crop_image = ImageCropMutation.Field()
