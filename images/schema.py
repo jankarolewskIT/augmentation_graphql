@@ -165,7 +165,6 @@ class ImageCompressionMutation(relay.ClientIDMutation):
 
     image = graphene.Field(ImageType)
 
-
     @classmethod
     @prepare_image
     def mutate_and_get_payload(cls, root, info, **kwargs):
@@ -187,12 +186,6 @@ class ImageCompressionMutation(relay.ClientIDMutation):
         )
 
         return ImageCompressionMutation(obj)
-
-
-
-
-
-
 
 
 class Mutation:
