@@ -1,0 +1,2 @@
+class CropParametersError(Exception):
+    pass
