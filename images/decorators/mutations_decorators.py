@@ -12,7 +12,10 @@ def prepare_image(func):
         bytes_img = initial_base64.encode('utf-8')
         original_data = base64.b64decode(bytes_img)
         original_buffer = BytesIO(original_data)
-        kwargs['pillow_img'] = PillowImage.open(original_buffer).convert("RGB")
+        if PillowImage.open(original_buffer).mode not in ['RGB', 'L']:
+            kwargs['pillow_img'] = PillowImage.open(original_buffer).convert("RGB")
+        else:
+            kwargs['pillow_img'] = PillowImage.open(original_buffer)
         return func(instance, root, info, **kwargs)
 
     return wrapper
