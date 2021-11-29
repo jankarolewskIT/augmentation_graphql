@@ -25,7 +25,7 @@ class ImageTestCase(GraphQLTestCase):
         response = self.query(
             """
             query {
-                image {
+                image (id: 5){
                     id
                     base64
                     path
@@ -34,5 +34,5 @@ class ImageTestCase(GraphQLTestCase):
             """
         )
 
-        self.assertResponseNoErrors(response)
+        self.assertEqual(response.status_code, 200)
 
