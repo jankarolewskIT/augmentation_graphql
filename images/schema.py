@@ -10,6 +10,7 @@ from graphene_django.types import DjangoObjectType
 from .decorators.mutations_decorators import prepare_image
 from .errors.mutation_errors import CropParametersError
 from .models import Image
+from .utils.parsers import pars_data
 
 
 class ImageType(DjangoObjectType):
@@ -52,13 +53,11 @@ class ImageResizeMutation(relay.ClientIDMutation):
 
         new_buffer = BytesIO()
 
-        resized_img.save(new_buffer, format="JPEG")
-        resized_img_str = base64.b64encode(new_buffer.getvalue()).decode('utf-8')
-        resized_img_data = base64.b64decode(resized_img_str)
+        resize_image_data = pars_data(resized_img, new_buffer)
 
         obj = Image.objects.create(
-            base64=resized_img_str,
-            path=ContentFile(resized_img_data, name="resized_img.jpeg")
+            base64=resize_image_data[1],
+            path=ContentFile(resize_image_data[0], name="resized_img.jpeg")
         )
         return ImageResizeMutation(obj)
 
@@ -94,13 +93,11 @@ class ImageCropMutation(relay.ClientIDMutation):
         new_buffer = BytesIO()
         crop_img = kwargs.get('pillow_img').crop(crop_box)
 
-        crop_img.save(new_buffer, format="JPEG")
-        crop_img_str = base64.b64encode(new_buffer.getvalue()).decode('utf-8')
-        crop_img_data = base64.b64decode(crop_img_str)
+        cropped_image_data = pars_data(crop_img, new_buffer)
 
         obj = Image.objects.create(
-            base64=crop_img_str,
-            path=ContentFile(crop_img_data, name="crop_img.jpeg")
+            base64=cropped_image_data[1],
+            path=ContentFile(cropped_image_data[0], name="crop_img.jpeg")
         )
 
         return ImageCropMutation(obj)
@@ -121,13 +118,11 @@ class ImageRotateMutation(relay.ClientIDMutation):
         new_buffer = BytesIO()
         rotate_img = kwargs.get('pillow_img').rotate(angle)
 
-        rotate_img.save(new_buffer, format="JPEG")
-        rotate_img_str = base64.b64encode(new_buffer.getvalue()).decode('utf-8')
-        rotate_img_data = base64.b64decode(rotate_img_str)
+        rotated_data = pars_data(rotate_img, new_buffer)
 
         obj = Image.objects.create(
-            base64=rotate_img_str,
-            path=ContentFile(rotate_img_data, name="rotate_img.jpeg")
+            base64=rotated_data[1],
+            path=ContentFile(rotated_data[0], name="rotate_img.jpeg")
         )
 
         return ImageRotateMutation(obj)
@@ -146,13 +141,11 @@ class ImageNegativeMutation(relay.ClientIDMutation):
 
         negative_img = ImageOps.invert(kwargs.get('pillow_img'))
 
-        negative_img.save(new_buffer, format="JPEG")
-        negative_img_str = base64.b64encode(new_buffer.getvalue()).decode('utf-8')
-        negative_img_data = base64.b64decode(negative_img_str)
+        negative_image_data = pars_data(negative_img, new_buffer)
 
         obj = Image.objects.create(
-            base64=negative_img_str,
-            path=ContentFile(negative_img_data, name="negative_img.jpeg")
+            base64=negative_image_data[1],
+            path=ContentFile(negative_image_data[0], name="negative_img.jpeg")
         )
 
         return ImageNegativeMutation(obj)
