@@ -31,10 +31,17 @@ class ImageNode(DjangoObjectType):
 
 class Query(graphene.ObjectType):
     all_images = graphene.List(ImageType)
-    image = relay.Node.Field(ImageNode)
+    image = graphene.Field(ImageType, id=graphene.Int(), required=True)
 
     def resolve_all_images(self, info, **kwargs):
         return Image.objects.all()
+
+    def resolve_image(self, info, **kwargs):
+        id_ = kwargs.get('id')
+        if id_:
+            return Image.objects.get(pk=id_)
+
+
 
 
 class ImageResizeMutation(relay.ClientIDMutation):
