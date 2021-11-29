@@ -26,6 +26,6 @@ def get_test_image(url: str) -> None:
 
 if __name__ == '__main__':
     amount = 10
-    URL = f"https://picsum.photos/{random.randint(50, 500)}/{random.randint(50, 500)}"
     for _ in range(amount):
+        URL = f"https://picsum.photos/{random.randint(50, 500)}/{random.randint(50, 500)}"
         get_test_image(URL)
