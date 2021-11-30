@@ -1,5 +1,8 @@
+import base64
+import io
 import json
 
+from PIL import Image
 from django.conf import settings
 from graphene_django.utils.testing import GraphQLTestCase
 
@@ -25,13 +28,18 @@ class ImageRotateTestCase(GraphQLTestCase):
     def test_rotation(self):
         with open(f"{settings.BASE_DIR}/json_data.json", "r") as json_file:
             data = json.load(json_file)
-        for request in data:
-            initial_base64 = request.get("base64")
-            angle = 360
+        for query in data:
+            initial_base64_str = query.get("base64")
+            initial_base64 = base64.b64decode(query.get("base64"))
+            initial_image = Image.open(io.BytesIO(initial_base64))
+
+            initial_width, initial_height = initial_image.size
+
+            angle = 90
             response = self.query(
                 f"""
                 mutation {{
-                    rotateImage (input: {{base64: "{initial_base64}", angle:{angle}}}){{
+                    rotateImage (input: {{base64: "{initial_base64_str}", angle:{angle}}}){{
                         image {{
                             id
                             base64
@@ -44,24 +52,10 @@ class ImageRotateTestCase(GraphQLTestCase):
             )
 
             rotate_image_base64 = json.loads(response.content.decode('utf-8'))['data']['rotateImage']['image']['base64']
+            rotated_img_data = base64.b64decode(rotate_image_base64)
+            rotated_image = Image.open(io.BytesIO(rotated_img_data))
 
-            self.assertAlmostEqual(initial_base64, rotate_image_base64)
-            # full_rotation_angle = 360 - angle
-            # full_rotation_response = self.query(
-            #     f"""
-            #     mutation {{
-            #         rotateImage (input: {{base64: "{rotate_image_base64}", angle:{full_rotation_angle}}}){{
-            #             image {{
-            #                 id
-            #                 base64
-            #                 path
-            #             }}
-            #         }}
-            #     }}
-            #     """
-            # )
-            #
-            # back_rotated_base64 = json.loads(full_rotation_response.content.decode('utf-8'))['data']['rotateImage']['image']['base64']
-            #
-            # self.assertEqual(initial_base64, back_rotated_base64)
+            rotated_width, rotated_height = rotated_image.size
 
+            self.assertAlmostEqual(initial_width, rotated_height)
+            self.assertAlmostEqual(initial_height, rotated_width)
