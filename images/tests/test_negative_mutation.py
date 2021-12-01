@@ -2,8 +2,8 @@ import base64
 import io
 import json
 
-from django.conf import settings
 from PIL import Image
+from django.conf import settings
 from graphene_django.utils.testing import GraphQLTestCase
 
 
@@ -35,7 +35,6 @@ class ImageNegativeTestCase(GraphQLTestCase):
             initial_base64_data = base64.b64decode(initial_base64_str)
             initial_image = Image.open(io.BytesIO(initial_base64_data))
 
-
             response = self.query(
                 f"""
                 mutation {{
@@ -54,5 +53,3 @@ class ImageNegativeTestCase(GraphQLTestCase):
             negative_base64_data = base64.b64decode(negative_base64_str)
             negative_image = Image.open(io.BytesIO(negative_base64_data))
             mode_negative = negative_image.mode
-
-

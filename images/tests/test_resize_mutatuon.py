@@ -1,8 +1,9 @@
-from django.conf import settings
+import base64
 import io
 import json
+
 from PIL import Image
-import base64
+from django.conf import settings
 from graphene_django.utils.testing import GraphQLTestCase
 
 
@@ -10,6 +11,7 @@ class ImageResizeTestCase(GraphQLTestCase):
     """
     Test for resizeImage Mutation
     """
+
     def test_mutation_connection(self):
         """Test connection. Is status code: 200 OK"""
         response = self.query(
@@ -58,7 +60,8 @@ class ImageResizeTestCase(GraphQLTestCase):
                 """
             )
 
-            resized_image_base64 = json.loads(response.content.decode('utf-8'))['data']['resizeImage']['image']['base64']
+            resized_image_base64 = json.loads(response.content.decode('utf-8'))['data']['resizeImage']['image'][
+                'base64']
             resized_image_bytes = base64.b64decode(resized_image_base64)
             resized_image = Image.open(io.BytesIO(resized_image_bytes))
 
@@ -66,5 +69,3 @@ class ImageResizeTestCase(GraphQLTestCase):
 
             self.assertEqual(new_height, resized_height)
             self.assertEqual(new_width, resized_width)
-
-

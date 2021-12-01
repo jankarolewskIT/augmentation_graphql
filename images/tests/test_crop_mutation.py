@@ -8,7 +8,12 @@ from graphene_django.utils.testing import GraphQLTestCase
 
 
 class ImageCropMutation(GraphQLTestCase):
+    """
+    Test cases for cropImage mutation
+    """
+
     def test_connection(self):
+        """Test connection. Is status code: 200 OK"""
         with open(f"{settings.BASE_DIR}/json_data.json", "r") as json_file:
             data = json.load(json_file)
 
@@ -35,6 +40,9 @@ class ImageCropMutation(GraphQLTestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_raise_crop_error(self):
+        """
+        Check if mutation raises CropParametersError if parameters are not valid
+        """
         with open(f"{settings.BASE_DIR}/json_data.json", "r") as json_file:
             data = json.load(json_file)
 
@@ -61,13 +69,18 @@ class ImageCropMutation(GraphQLTestCase):
         self.assertResponseHasErrors(response)
 
     def test_cropped(self):
+        """
+        Test if cropped Image dimensions are subtract of given parameters
+        crop_width = right - left
+        crop_height = bottom - top
+        """
         with open(f"{settings.BASE_DIR}/json_data.json", "r") as json_file:
             data = json.load(json_file)
 
         left = 100
         top = 100
-        right = 125
-        bottom = 125
+        right = 127
+        bottom = 120
 
         for query in data:
             initial_base64 = query.get("base64")

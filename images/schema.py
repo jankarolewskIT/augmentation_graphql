@@ -9,6 +9,7 @@ from graphene_django.types import DjangoObjectType
 
 from .decorators.mutations_decorators import prepare_image
 from .errors.mutation_errors import CropParametersError
+from .errors.query_errors import IdRequiredError
 from .models import Image
 from .utils.parsers import pars_data
 
@@ -40,8 +41,8 @@ class Query(graphene.ObjectType):
         id_ = kwargs.get('id')
         if id_:
             return Image.objects.get(pk=id_)
-
-
+        else:
+            raise IdRequiredError('Argument id is required for this query')
 
 
 class ImageResizeMutation(relay.ClientIDMutation):
@@ -123,8 +124,7 @@ class ImageRotateMutation(relay.ClientIDMutation):
         angle = kwargs.get('angle')
 
         new_buffer = BytesIO()
-        rotate_img = kwargs.get('pillow_img').rotate(angle)
-
+        rotate_img = kwargs.get('pillow_img').rotate(angle, expand=True)
         rotated_data = pars_data(rotate_img, new_buffer)
 
         obj = Image.objects.create(
@@ -147,7 +147,6 @@ class ImageNegativeMutation(relay.ClientIDMutation):
         new_buffer = BytesIO()
 
         negative_img = ImageOps.invert(kwargs.get('pillow_img'))
-
         negative_image_data = pars_data(negative_img, new_buffer)
 
         obj = Image.objects.create(

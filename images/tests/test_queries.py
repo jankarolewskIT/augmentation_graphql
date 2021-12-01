@@ -9,6 +9,7 @@ class ImageTestCase(GraphQLTestCase):
     """
     Tests for GraphQL Queries
     """
+
     def test_all_images_query(self):
         """
         Test if response show no errors and if __len__ of
@@ -37,7 +38,6 @@ class ImageTestCase(GraphQLTestCase):
         Test if Image can be found and retrieve by it's ID
         """
         obj = Image.objects.create(base64="", path="")
-
 
         response = self.query(
             f"""

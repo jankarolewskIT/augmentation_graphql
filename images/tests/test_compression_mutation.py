@@ -5,6 +5,7 @@ class ImageCompressionTestCase(GraphQLTestCase):
     """
     Test for compressImage mutation
     """
+
     def test_connection(self):
         """Test connection. Is status code: 200 OK"""
         response = self.query(
