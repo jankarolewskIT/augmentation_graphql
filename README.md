@@ -3,10 +3,10 @@
 <h3>In order to use application fallow this guide lines</h3>
 
 <ol>
-  <li>Clone this repository --- git clone <this repo url></li>
+  <li>Clone this repository --- git clone (this repo url)</li>
   <li>Type docker-compose up while you are in Project main directory</li>
   <h4>App is up and running, however you also would want to migarte data to Postgres DB</h4>
-  <li>Enter yout container --- docker exec -it <container ID></li>
+  <li>Enter yout container --- docker exec -it (container ID)</li>
   <li>Inside your conatiner migrate data --- python manage.py migarte</li>
   <h4>Prepare test cases</h4>
   <li>type: python images/loaders/image_loader.py</li>
