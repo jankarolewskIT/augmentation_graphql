@@ -7,7 +7,11 @@ from graphene_django.utils.testing import GraphQLTestCase
 
 
 class ImageResizeTestCase(GraphQLTestCase):
+    """
+    Test for resizeImage Mutation
+    """
     def test_mutation_connection(self):
+        """Test connection. Is status code: 200 OK"""
         response = self.query(
             """
             mutation {
@@ -27,7 +31,10 @@ class ImageResizeTestCase(GraphQLTestCase):
 
         self.assertEqual(response.status_code, 200)
 
-    def test_mutation_execution(self):
+    def test_resize_mutation(self):
+        """
+        Test if width/height given in query match new Image width and height
+        """
 
         with open(f"{settings.BASE_DIR}/json_data.json", "r") as json_file:
             data = json.load(json_file)

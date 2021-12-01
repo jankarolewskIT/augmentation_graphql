@@ -8,7 +8,12 @@ from graphene_django.utils.testing import GraphQLTestCase
 
 
 class ImageRotateTestCase(GraphQLTestCase):
+    """
+    Tests for rotateImage mutation
+    """
+
     def test_rotate_connection(self):
+        """Test connection. Is status code: 200 OK"""
         response = self.query(
             """
             mutation {
@@ -25,7 +30,10 @@ class ImageRotateTestCase(GraphQLTestCase):
 
         self.assertEqual(response.status_code, 200)
 
-    def test_rotation(self):
+    def test_rotation_90(self):
+        """
+        Test if Image's width and height are switched after 90' degrees rotation
+        """
         with open(f"{settings.BASE_DIR}/json_data.json", "r") as json_file:
             data = json.load(json_file)
         for query in data:
