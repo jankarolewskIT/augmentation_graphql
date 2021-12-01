@@ -6,6 +6,10 @@ from PIL import Image as PillowImage
 
 
 def prepare_image(func):
+    """
+    Mutation decorator design to prepare images to be cropped, negated, compressed, resized or rotated
+    """
+
     @functools.wraps(func)
     def wrapper(instance, root, info, **kwargs):
         initial_base64 = kwargs.get('base64')

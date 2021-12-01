@@ -19,8 +19,6 @@ def create_query_data() -> None:
 
             request = {
                 "base64": base64_str,
-                # "img_name": img_name,
-                # "format": format_.upper()
             }
 
             request_list.append(request)

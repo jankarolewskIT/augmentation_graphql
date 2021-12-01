@@ -82,8 +82,16 @@ WSGI_APPLICATION = 'graphql_api_image.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'image',
+        'USER': 'image',
+        'PASSWORD': 'image123',
+        'HOST': 'db',
+        'PORT': '5432',
+        'TEST': {
+            'NAME': 'test_img_db',
+        },
+
     }
 }
 
@@ -112,7 +120,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'PL'
 
 USE_I18N = True
 
