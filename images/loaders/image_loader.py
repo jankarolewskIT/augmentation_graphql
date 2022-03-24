@@ -1,8 +1,11 @@
 import pathlib
 import random
+import os
 import string
 
 import requests
+
+import query_loader
 
 """
 Module runs get_test_image function for test purposes 
@@ -19,13 +22,20 @@ def get_test_image(url: str) -> None:
     size = 10
     response = requests.get(url)
     file_name = ''.join(random.choices(string.ascii_uppercase + string.digits, k=size))
-    with open(f"{pathlib.Path(__file__).parent.parent.parent}/test_images/{file_name}.{random.choice(formats)}",
+    test_image_dir = os.path.join(pathlib.Path(__file__).parent.parent.parent, "test_images")
+    if not os.path.isdir(test_image_dir):
+        os.makedirs(test_image_dir)
+    with open(os.path.join(test_image_dir, f"{file_name}.{random.choice(formats)}"),
               "wb") as file:
         file.write(response.content)
 
 
-if __name__ == '__main__':
-    amount = 10
+def main(url: str, amount: int = 10):
     for _ in range(amount):
-        URL = f"https://picsum.photos/{random.randint(50, 500)}/{random.randint(50, 500)}"
-        get_test_image(URL)
+        get_test_image(url)
+    query_loader.create_query_data()
+
+
+if __name__ == '__main__':
+    URL = f"https://picsum.photos/{random.randint(50, 500)}/{random.randint(50, 500)}"
+    main(URL)

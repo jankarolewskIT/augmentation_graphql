@@ -14,7 +14,6 @@ def create_query_data() -> None:
     for image in os.listdir(directory):
         image = image.decode('utf-8')
         with open(f"{pathlib.Path(__file__).parent.parent.parent}/test_images/{image}", "rb") as file:
-            img_name, format_ = image.split('.')
             base64_str = base64.b64encode(file.read()).decode('utf-8')
 
             request = {
@@ -24,7 +23,3 @@ def create_query_data() -> None:
             request_list.append(request)
         with open(f"{pathlib.Path(__file__).parent.parent.parent}/json_data.json", "w") as file:
             json.dump(request_list, file, indent=4)
-
-
-if __name__ == "__main__":
-    create_query_data()
