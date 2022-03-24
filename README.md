@@ -10,7 +10,6 @@
   <li>Inside your conatiner migrate data --- python manage.py migarte</li>
   <h4>Prepare test cases</h4>
   <li>type: python images/loaders/image_loader.py</li>
-  <li>type: python images/loaders/image_loader.py</li>
   <h3>Make tests</h3>
   <li>type python manage.py test</li>
   <h2>You are good to go! Go to: <strong>http://0.0.0.0:8000/graphql/</strong> and try my app by yourself</h2>
